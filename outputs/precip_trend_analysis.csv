@@ -1,7 +1,7 @@
 Basin,Slope (mm/yr),R2,OLS p-value,OLS_sig,MK trend,MK tau,MK p-value,MK_sig
-Caspian Sea (دریای خزر),,,,ns,insufficient data,,,ns
-Eastern (شرقی),,,,ns,insufficient data,,,ns
-Qaraqom (قراقوم),,,,ns,insufficient data,,,ns
-Markazi (مرکزی),,,,ns,insufficient data,,,ns
-Persian Gulf (خلیج فارس),,,,ns,insufficient data,,,ns
-Urmia (ارومیه),,,,ns,insufficient data,,,ns
+Caspian Sea (دریای خزر),-0.192,0.002,0.5065,ns,no trend,-0.023,0.5899,ns
+Eastern (شرقی),-0.006,0.0,0.9546,ns,no trend,0.005,0.8988,ns
+Qaraqom (قراقوم),-0.182,0.003,0.4252,ns,no trend,-0.023,0.5964,ns
+Markazi (مرکزی),-0.239,0.007,0.2034,ns,no trend,-0.025,0.5675,ns
+Persian Gulf (خلیج فارس),-0.011,0.0,0.971,ns,no trend,0.001,0.9832,ns
+Urmia (ارومیه),-0.053,0.0,0.8301,ns,no trend,-0.003,0.9422,ns

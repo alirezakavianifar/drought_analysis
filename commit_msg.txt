@@ -1,0 +1,24 @@
+Complete drought analysis overhaul: water balance model, spatial-temporal analysis, RMSE validation, and Chapter 4
+
+Rewrote build_master_notebook.py with 16 complete phases (up from 12):
+- Phase 5: Markov chain drought state transitions per basin
+- Phase 6: ARIMA validation with MAE and RMSE per basin
+- Phase 10: Precipitation trend analysis (CHIRPS vs GRACE divergence finding)
+- Phase 11: GRACE-SPI correlation fixed (was empty, now r=0.19-0.49 significant)
+- Phase 12: Formal H1/H2/H3 hypothesis testing with explicit verdicts and thresholds
+- Phase 13: GRACE strengths and weaknesses with empirical evidence
+- Phase 15: Simple water balance model using delta-S = P - (ET+Q), WBI index
+- Phase 16: Spatial-temporal drought heatmap (basin x year, 2002-2022)
+
+Fixed CHIRPS aggregation phase (was a placeholder comment); processes 245 months
+in-memory from cached gz files via rasterio.MemoryFile to avoid disk writes.
+
+All 47 outputs regenerated including new files: water_balance_wbi_vs_dsi.png,
+water_balance_annual.png, water_balance_correlation.csv, water_budget_index.csv,
+drought_spatiotemporal_heatmap.png, drought_spatiotemporal_comparison.png,
+drought_coverage_by_year.png, dsi_annual_by_basin.csv.
+hypothesis_h2_validation.csv now includes RMSE columns.
+
+Added thesis_chapter_4_detailed.md: complete 304-line Chapter 4 with all tables,
+figures, and formal hypothesis verdicts grounded in actual computed values.
+Key finding: 2022 is the worst hydrological drought year on record for 5 of 6 basins.

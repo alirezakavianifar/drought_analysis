@@ -1,7 +1,7 @@
-Basin,Forecasting Accuracy (Drought State),Mean Absolute Error (DSI)
-caspiansea,100.0,0.457
-eastern,66.7,0.676
-qaraqom,50.0,0.705
-markazi,83.3,0.517
-persiangolf,41.7,0.591
-urmia,58.3,0.796
+Basin,Forecasting Accuracy (Drought State),MAE (cm),RMSE (cm),MAE (DSI units),RMSE (DSI units)
+caspiansea,67.3,6.897,8.839,0.513,0.657
+eastern,55.1,2.525,3.103,0.587,0.722
+qaraqom,71.4,2.927,3.894,0.576,0.766
+markazi,53.1,2.86,3.548,0.497,0.617
+persiangolf,24.5,7.157,9.054,1.026,1.299
+urmia,26.5,14.641,17.703,1.311,1.585
