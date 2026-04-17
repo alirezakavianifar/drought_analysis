@@ -33,3 +33,22 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex*
+*.pdf
+# Keep the final PDF if you want, but usually it's generated
+# !thesis_chapter_4_fa.pdf
+
+# Temporary files
+*.txt
+!requirements.txt
+*.docx
+*.md
+!README*.md
+!AGENTS.md
+!NOTEBOOK_CONVENTIONS_AND_MODIFICATIONS.md
