@@ -1,37 +1,53 @@
 \documentclass[12pt, a4paper]{article}
 
+%% ─── COMPATIBILITY PATCHES (Kernel/bidi/hyperref) ──────────────────────────
 \makeatletter
-% Essential compatibility dummies for modern bidi/xepersian
-\def\IfPackageLoadedTF#1#2#3{\@ifpackageloaded{#1}{#2}{#3}}
-\def\IfPackageLoadedT#1#2{\@ifpackageloaded{#1}{#2}{}}
-\def\IfPackageLoadedF#1#2{\@ifpackageloaded{#1}{}{#2}}
-\def\IfFileLoadedTF#1#2#3{\@ifpackageloaded{#1}{#2}{#3}}
-\def\IfFileLoadedT#1#2{\@ifpackageloaded{#1}{#2}{}}
-\def\IfFileLoadedF#1#2{\@ifpackageloaded{#1}{}{#2}}
-\def\IfClassLoadedTF#1#2#3{\@ifclassloaded{#1}{#2}{#3}}
-\def\IfClassLoadedT#1#2{\@ifclassloaded{#1}{#2}{}}
-\def\IfClassLoadedF#1#2{\@ifclassloaded{#1}{}{#2}}
-\def\UseTaggingSocket#1#2{}
-\def\UseTaggingSocketTF#1#2#3{#3}
-\def\MathCollectTrue{}
-\def\MathCollectFalse{}
-\def\Acrobatmenu#1#2{}
-\def\ApplyPatchToFile#1#2{}
+\let\old@tabular\tabular
+\let\old@endtabular\endtabular
+% Kernel dummy fixes (using LaTeX2e internals for better compatibility)
+\providecommand{\IfFileLoadedTF}[3]{\@ifpackageloaded{#1}{#2}{#3}}
+\providecommand{\IfFileLoadedT}[2]{\IfFileLoadedTF{#1}{#2}{}}
+\providecommand{\IfFileLoadedF}[2]{\IfFileLoadedTF{#1}{}{#2}}
+\providecommand{\IfPackageLoadedTF}[3]{\@ifpackageloaded{#1}{#2}{#3}}
+\providecommand{\IfPackageLoadedT}[2]{\IfPackageLoadedTF{#1}{#2}{}}
+\providecommand{\IfPackageLoadedF}[2]{\IfPackageLoadedTF{#1}{}{#2}}
+\providecommand{\IfClassLoadedTF}[3]{\@ifclassloaded{#1}{#2}{#3}}
+\providecommand{\IfClassLoadedT}[2]{\IfClassLoadedTF{#1}{#2}{}}
+\providecommand{\IfClassLoadedF}[2]{\IfClassLoadedTF{#1}{}{#2}}
+\providecommand{\AddToHook}[2]{}
+\providecommand{\ActivateGenericHook}[1]{}
+\providecommand{\UseTaggingSocket}[1]{}
+\providecommand{\UseTaggingSocketTF}[3]{#3}
+\providecommand{\MathCollectTrue}{}
+\providecommand{\MathCollectFalse}{}
+\providecommand{\Acrobatmenu}[2]{}
+\providecommand{\@kernel@tabular@init}{}
+\providecommand{\@tabarray}{}
+\providecommand{\ar@ialign}{\ialign}
+\makeatother
 
-\usepackage{expl3}
 \ExplSyntaxOn
+\makeatletter
+% bidi/tabular/L3 compatibility - Force-defining L3 variables used by recent bidi versions
 \bool_if_exist:NF \l__bidi_tabular_rtl_bool { \bool_new:N \l__bidi_tabular_rtl_bool }
 \cs_if_exist:NF \tbl_save_outer_table_cols: { \cs_new:Npn \tbl_save_outer_table_cols: {} }
 \cs_if_exist:NF \tbl_count_table_cols: { \cs_new:Npn \tbl_count_table_cols: {} }
-\cs_if_exist:NF \tbl_init_cell_data_for_row: { \cs_new:Npn \tbl_init_cell_data_for_row: {} }
+\cs_if_exist:NF \tbl_init_cell_data_for_row: { \bool_new:N \tbl_init_cell_data_for_row: }
 \cs_if_exist:NF \tbl_init: { \cs_new:Npn \tbl_init: {} }
-\ExplSyntaxOff
+\cs_if_exist:NF \tbl_crcr:n { \cs_new:Npn \tbl_crcr:n #1 {} }
+\cs_if_exist:NF \tag_socket_use:n { \cs_new:Npn \tag_socket_use:n #1 {} }
+\cs_if_exist:NF \tag_socket_use_expandable:n { \cs_new:Npn \tag_socket_use_expandable:n #1 {} }
+\cs_if_exist:NF \tag_socket_use_expandable:nn { \cs_new:Npn \tag_socket_use_expandable:nn #1 #2 {} }
+\cs_if_exist:NF \tbl_restore_outer_table_cols: { \cs_new:Npn \tbl_restore_outer_table_cols: {} }
+\cs_if_exist:NF \tbl_restore_outer_cell_data: { \cs_new:Npn \tbl_restore_outer_cell_data: {} }
 \makeatother
+\ExplSyntaxOff
 
+%% ─── All packages BEFORE xepersian ──────────────────────────────────────────
 \usepackage{geometry}
 \usepackage{booktabs}
 \usepackage{longtable}
-\usepackage{array} 
+\usepackage{array} % Re-enabling array to fix custom column types
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -39,42 +55,44 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{caption}
-\usepackage{titlesec}   
+\usepackage{titlesec}   % custom section formatting
 \usepackage[colorlinks=true,
             linkcolor=blue!60!black,
             citecolor=green!50!black,
             urlcolor=blue,
-            unicode=true]{hyperref} 
+            unicode=true]{hyperref} % removed 'draft' to allow normal hook processing
 
-\usepackage{xepersian}  
+\usepackage{xepersian}  % xepersian MUST be last
+
+%% ─── Fonts (after xepersian) ─────────────────────────────────────────────────
 \settextfont{Vazirmatn}
-\setlatintextfont{Times New Roman}
+% \setlatintextfont[Scale=1.0]{Times New Roman}
 
+%% ─── Page geometry ───────────────────────────────────────────────────────────
 \geometry{top=2.5cm, bottom=2.5cm, right=3.0cm, left=2.5cm}
+
+%% ─── Line spacing ────────────────────────────────────────────────────────────
 \onehalfspacing
+
+%% ─── Caption style ───────────────────────────────────────────────────────────
 \captionsetup{font=small, labelfont=bf, justification=centering}
 
+%% ─── Table column helpers ────────────────────────────────────────────────────
 \newcolumntype{C}{>{\centering\arraybackslash}p{2.2cm}}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}p{3cm}}
 
+%% ─── Figure helper: show placeholder if image file is missing ────────────────
 \newcommand{\safefig}[3]{%
   \IfFileExists{#1}{\includegraphics[#2]{#1}}{%
     \fbox{\parbox{0.7\textwidth}{\centering\small\textit{#3 — تصویر موجود نیست}}}%
   }%
 }
+
+%% ─── Misc ────────────────────────────────────────────────────────────────────
 \newcommand{\sig}[1]{\textsuperscript{#1}}
 
-\makeatletter
-\providecommand{\@kernel@tabular@init}{}
-\providecommand{\@tabarray}{}
-\usepackage{expl3}
-\ExplSyntaxOn
-\cs_if_exist:NF \tbl_save_outer_table_cols: { \cs_new:Npn \tbl_save_outer_table_cols: {} }
-\cs_if_exist:NF \tbl_count_table_cols: { \cs_new:Npn \tbl_count_table_cols: {} }
-\cs_if_exist:NF \tbl_init_cell_data_for_row: { \cs_new:Npn \tbl_init_cell_data_for_row: {} }
-\cs_if_exist:NF \tbl_init: { \cs_new:Npn \tbl_init: {} }
-\ExplSyntaxOff
-\makeatother
+
+% ══════════════════════════════════════════════════════════════════════════════
 
 \begin{document}
 
@@ -145,8 +163,7 @@
   \caption{اهمیت هیدرولوژیکی و تنش‌های اصلی خشکسالی در هر حوضه}
   \label{tab:hydro-importance}
   \small
-  \begin{tabular}{lll}
-    \toprule
+  \begin{tabular}{lll}\toprule
     \textbf{حوضه} & \textbf{اهمیت هیدرولوژیکی} & \textbf{تنش اصلی خشکسالی} \\
     \midrule
     خزر        & تنها حوضه مرطوب؛ تغذیه مخازن عمده (سد سفیدرود) &
@@ -202,10 +219,9 @@
   \caption{منابع خطای \lr{GRACE} و پردازش‌های اعمال‌شده در این مطالعه}
   \label{tab:grace-errors}
   \small
-  \begin{tabular}{llll}
-    \toprule
+  \begin{tabular}{llll}\hline
     \textbf{منبع خطا} & \textbf{توضیح} & \textbf{مقدار معمول} & \textbf{راهکار کاهش} \\
-    \midrule
+    \hline
     نویز اندازه‌گیری     & نویز سنجش فاصله \lr{Ka-band} و شتاب‌سنج &
                            $\sim$۱–۲ سانتی‌متر \lr{EWH} & منظم‌سازی ماسکون \\
     خطای نشت            & آلودگی سیگنال از کوتاه‌کردن هارمونیک‌های کروی &
@@ -218,7 +234,7 @@
                            قابل‌مشاهده در حل \lr{SH} & معادل فیلتر \lr{DDK5} (ماسکون) \\
     شکاف مأموریت (۲۰۱۷–۲۰۱۸) & شکاف $\sim$۱۱ ماهه بین \lr{GRACE} و \lr{GRACE-FO} &
                            \lr{N/A} & درون‌یابی خطی؛ ماه‌های شکاف علامت‌گذاری شده \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -288,21 +304,20 @@
   \centering
   \caption{نتایج روند بلندمدت \lr{GRACE TWSA} (آگوست ۲۰۰۲ – دسامبر ۲۰۲۲)}
   \label{tab:twsa-trends}
-  \begin{tabular}{lcccc}
-    \toprule
+  \begin{tabular}{lcccc}\hline
     \textbf{حوضه} &
     \textbf{شیب \lr{OLS} (سانتی‌متر در سال)} &
     \textbf{R\textsuperscript{2}} &
     \textbf{تاو \lr{MK}} &
     \textbf{معنی‌داری} \\
-    \midrule
+    \hline
     دریای خزر  & $-2.043$ & $0.805$ & $-0.724$ & *** \\
     ارومیه     & $-0.977$ & $0.267$ & $-0.359$ & *** \\
     مرکزی      & $-0.840$ & $0.744$ & $-0.683$ & *** \\
     خلیج فارس  & $-0.602$ & $0.260$ & $-0.351$ & *** \\
     قراقوم     & $-0.535$ & $0.387$ & $-0.458$ & *** \\
     شرقی       & $-0.472$ & $0.420$ & $-0.507$ & *** \\
-    \bottomrule
+    \hline
   \end{tabular}
   \par\smallskip
   \raggedleft\small
@@ -337,21 +352,20 @@
   \centering
   \caption{نتایج روند بارندگی \lr{CHIRPS}}
   \label{tab:chirps-trends}
-  \begin{tabular}{lcccc}
-    \toprule
+  \begin{tabular}{lcccc}\hline
     \textbf{حوضه} &
     \textbf{شیب \lr{OLS} (میلی‌متر در سال)} &
     \textbf{\lr{p}-value \lr{OLS}} &
     \textbf{روند \lr{MK}} &
     \textbf{\lr{p}-value \lr{MK}} \\
-    \midrule
+    \hline
     دریای خزر  & $-0.19$ & $0.507$ & بدون روند & $0.590$ \\
     ارومیه     & $-0.05$ & $0.830$ & بدون روند & $0.942$ \\
     مرکزی      & $-0.24$ & $0.203$ & بدون روند & $0.568$ \\
     خلیج فارس  & $-0.01$ & $0.971$ & بدون روند & $0.983$ \\
     قراقوم     & $-0.18$ & $0.425$ & بدون روند & $0.596$ \\
     شرقی       & $-0.01$ & $0.955$ & بدون روند & $0.899$ \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -372,21 +386,20 @@
   \centering
   \caption{خلاصه دوره‌های خشکسالی (آستانه \lr{DSI} $< -1.0$)}
   \label{tab:drought-periods}
-  \begin{tabular}{lcccc}
-    \toprule
+  \begin{tabular}{lcccc}\hline
     \textbf{حوضه} &
     \textbf{تعداد دوره‌ها} &
     \textbf{مجموع ماه‌های خشکسالی} &
     \textbf{طولانی‌ترین دوره (ماه)} &
     \textbf{بدترین \lr{DSI}} \\
-    \midrule
+    \hline
     دریای خزر  & ۷  & ۴۱ & ۱۹ & $-2.71$ \\
     ارومیه     & ۱۳ & ۴۰ & ۷  & $-2.48$ \\
     مرکزی      & ۱۳ & ۴۰ & ۱۱ & $-2.70$ \\
     خلیج فارس  & ۱۳ & ۴۰ & ۶  & $-2.17$ \\
     قراقوم     & ۲۰ & ۳۲ & ۳  & $-3.38$ \\
     شرقی       & ۲۰ & ۳۲ & ۴  & $-3.38$ \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -420,17 +433,16 @@
   \centering
   \caption{بدترین سال خشکسالی به ازای هر حوضه (کمترین \lr{GRACE-DSI} سالانه میانگین)}
   \label{tab:worst-year}
-  \begin{tabular}{lcc}
-    \toprule
+  \begin{tabular}{lcc}\hline
     \textbf{حوضه} & \textbf{بدترین سال} & \textbf{\lr{DSI} سالانه میانگین} \\
-    \midrule
+    \hline
     دریای خزر  & ۲۰۲۲ & $-1.907$ \\
     مرکزی      & ۲۰۲۲ & $-1.532$ \\
     ارومیه     & ۲۰۲۲ & $-1.316$ \\
     شرقی       & ۲۰۲۲ & $-1.180$ \\
     خلیج فارس  & ۲۰۲۲ & $-1.041$ \\
     قراقوم     & ۲۰۲۱ & $-1.051$ \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -503,20 +515,19 @@
   \caption{همبستگی پیرسون — \lr{GRACE-DSI} در برابر \lr{SPI} به تفکیک حوضه و مقیاس
            زمانی}
   \label{tab:pearson-corr}
-  \begin{tabular}{lcccccc}
-    \toprule
+  \begin{tabular}{lcccccc}\hline
     \textbf{حوضه} &
     \textbf{r (\lr{SPI-3})} & \textbf{معنی‌داری} &
     \textbf{r (\lr{SPI-6})} & \textbf{معنی‌داری} &
     \textbf{r (\lr{SPI-12})} & \textbf{معنی‌داری} \\
-    \midrule
+    \hline
     دریای خزر  & $0.122$ & ns   & $0.212$ & *** & $0.289$ & *** \\
     شرقی       & $0.024$ & ns   & $0.133$ & *   & $0.191$ & **  \\
     قراقوم     & $0.239$ & ***  & $0.289$ & *** & $0.316$ & *** \\
     مرکزی      & $0.117$ & ns   & $0.328$ & *** & $0.493$ & *** \\
     خلیج فارس  & $0.173$ & **   & $0.312$ & *** & $0.464$ & *** \\
     ارومیه     & $0.150$ & *    & $0.242$ & *** & $0.328$ & *** \\
-    \bottomrule
+    \hline
   \end{tabular}
   \par\smallskip
   \raggedleft\small
@@ -524,7 +535,7 @@
 \end{table}
 
 \textbf{یافته ۱ — وابستگی به مقیاس زمانی:} همبستگی‌ها به‌طور یکنواخت با مقیاس زمانی
-\lr{SPI} افزایش می‌یابند. برای مرکزی، $r$ از $0.117$ (\lr{SPI-3}، بدون معنی‌داری) به
+\lr{SPI} افزایش می‌یابند. برای مرکزی، $r$ از $0.117$ (\lr{SPI-3}، بدون معنی‌داری) ke
 $0.493$ (\lr{SPI-12}، $p < 0.001$) افزایش می‌یابد. این یک پدیده هیدرولوژیکی
 شناخته‌شده است: ذخیره آب زیرزمینی ناهنجاری‌های بارش را در طول چند ماه یکپارچه
 می‌کند. \lr{SPI-3} کوتاه‌مدت سیگنال‌های هواشناسی را ضبط می‌کند که هنوز به سطوح
@@ -574,8 +585,7 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \caption{نتایج اعتبارسنجی پیش‌بینی \lr{ARIMA(1,1,1)} (۲۰\% نگه‌داشته‌شده $\approx$ ۴۹ ماه)}
   \label{tab:arima}
   \small
-  \begin{tabular}{lcccccc}
-    \toprule
+  \begin{tabular}{lcccccc}\hline
     \textbf{حوضه} &
     \textbf{دقت حالت خشکسالی (\%)} &
     \textbf{MAE (سانتی‌متر)} &
@@ -583,14 +593,14 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
     \textbf{MAE (DSI)} &
     \textbf{RMSE (DSI)} &
     \textbf{نتیجه} \\
-    \midrule
+    \hline
     قراقوم     & ۷۱.۴ & ۲.۹۳ & ۳.۸۹ & ۰.۵۷۶ & ۰.۷۶۶ & تأیید شد \\
     دریای خزر  & ۶۷.۳ & ۶.۹۰ & ۸.۸۴ & ۰.۵۱۳ & ۰.۶۵۷ & تأیید شد \\
     شرقی       & ۵۵.۱ & ۲.۵۳ & ۳.۱۰ & ۰.۵۸۷ & ۰.۷۲۲ & جزئی \\
     مرکزی      & ۵۳.۱ & ۲.۸۶ & ۳.۵۵ & ۰.۴۹۷ & ۰.۶۱۷ & جزئی \\
     خلیج فارس  & ۲۴.۵ & ۷.۱۶ & ۹.۰۵ & ۱.۰۲۶ & ۱.۲۹۹ & تأیید نشد \\
     ارومیه     & ۲۶.۵ & ۱۴.۶۴ & ۱۷.۷۰ & ۱.۳۱۱ & ۱.۵۸۵ & تأیید نشد \\
-    \bottomrule
+    \hline
   \end{tabular}
   \par\smallskip
   \raggedleft\small
@@ -634,17 +644,16 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \centering
   \caption{همبستگی بین \lr{WBI} و \lr{GRACE-DSI}}
   \label{tab:wbi-corr}
-  \begin{tabular}{lccc}
-    \toprule
+  \begin{tabular}{lccc}\hline
     \textbf{حوضه} & \textbf{r(\lr{WBI}, \lr{DSI})} & \textbf{\lr{p}-value} & \textbf{معنی‌داری} \\
-    \midrule
+    \hline
     شرقی       & $-0.459$ & $< 0.001$ & *** \\
     قراقوم     & $-0.275$ & $< 0.001$ & *** \\
     دریای خزر  & $-0.185$ & $0.004$   & **  \\
     ارومیه     & $-0.172$ & $0.007$   & **  \\
     مرکزی      & $-0.054$ & $0.402$   & \lr{ns} \\
     خلیج فارس  & $-0.013$ & $0.845$   & \lr{ns} \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -695,17 +704,16 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \centering
   \caption{نرخ تخلیه خطی پروکسی ذخیره آب زیرزمینی مستخرج از \lr{GRACE}}
   \label{tab:gws-trend}
-  \begin{tabular}{lccc}
-    \toprule
+  \begin{tabular}{lccc}\hline
     \textbf{حوضه} & \textbf{روند \lr{GWS} (سانتی‌متر در سال)} & \textbf{\lr{p}-value} & \textbf{معنی‌داری} \\
-    \midrule
+    \hline
     دریای خزر  & $-1.98$ & $< 0.001$ & *** \\
     ارومیه     & $-0.93$ & $< 0.001$ & *** \\
     مرکزی      & $-0.81$ & $< 0.001$ & *** \\
     خلیج فارس  & $-0.58$ & $< 0.001$ & *** \\
     قراقوم     & $-0.51$ & $0.001$   & *** \\
     شرقی       & $-0.45$ & $0.001$   & *** \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -743,17 +751,16 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \centering
   \caption{توافق دسته‌بندی \lr{GRACE-DSI} در برابر \lr{SPI-12} (۲۳۴ ماه هم‌پوشان)}
   \label{tab:kappa}
-  \begin{tabular}{lccc}
-    \toprule
+  \begin{tabular}{lccc}\hline
     \textbf{حوضه} & \textbf{کاپای کوهن ($\kappa$)} & \textbf{توافق خشکسالی (\%)} & \textbf{تفسیر} \\
-    \midrule
+    \hline
     مرکزی      & $0.360$ & ۷۹.۹ & توافق متوسط \\
     دریای خزر  & $0.290$ & ۷۹.۵ & توافق متوسط \\
     قراقوم     & $0.175$ & ۷۸.۲ & توافق ضعیف تا متوسط \\
     شرقی       & $0.146$ & ۸۰.۳ & توافق ضعیف \\
     ارومیه     & $0.071$ & ۷۵.۲ & توافق ضعیف \\
     خلیج فارس  & $0.033$ & ۷۳.۹ & توافق حداقلی \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
@@ -850,21 +857,20 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \caption{خلاصه محدودیت‌های پژوهش}
   \label{tab:limitations}
   \small
-  \begin{tabular}{llll}
-    \toprule
+  \begin{tabular}{llll}\hline
     \textbf{محدودیت} & \textbf{شدت} & \textbf{اقدام کاهشی اعمال‌شده} & \textbf{اقدام پیشنهادی آینده} \\
-    \midrule
+    \hline
     فقدان آب زیرزمینی درجا  & بالا     & معیارسنجی با مقالات، پروکسی \lr{GWS} &
-                               یکپارچه‌سازی \lr{GLDAS}؛ توافق داده چاه \\
+                                یکپارچه‌سازی \lr{GLDAS}؛ توافق داده چاه \\
     فقدان داده رواناب/جریان & متوسط    & مانده بیلان آبی &
-                               سوابق ایستگاه هیدرومتری \\
+                                سوابق ایستگاه هیدرومتری \\
     تفکیک خشن \lr{GRACE}    & متوسط    & فیلتر \lr{DDK}، مستندسازی نشت &
-                               مقیاس‌سازی پایین \lr{GRACE} \\
+                                مقیاس‌سازی پایین \lr{GRACE} \\
     شکاف مأموریت ۲۰۱۷–۲۰۱۸ & کم تا متوسط & درون‌یابی خطی + علامت‌گذاری &
-                               روش‌های پرکردن شکاف با آنسامبل \\
+                                روش‌های پرکردن شکاف با آنسامبل \\
     فقدان مشاهدات مستقیم $ET$ & متوسط  & پروکسی مانده \lr{WB} (سهم ۸۰\%) &
-                               \lr{MODIS ET} / بازتحلیل \lr{ERA5} \\
-    \bottomrule
+                                \lr{MODIS ET} / بازتحلیل \lr{ERA5} \\
+    \hline
   \end{tabular}
 \end{table}
 
@@ -934,17 +940,16 @@ $r = 0.4$–$0.7$ یافتند. نتایج ما ($r = 0.19$–$0.49$) در مح�
   \centering
   \caption{خلاصه همسویی با مقالات}
   \label{tab:lit-comparison}
-  \begin{tabular}{lll}
-    \toprule
+  \begin{tabular}{lll}\hline
     \textbf{یافته ما} & \textbf{مرجع مقاله} & \textbf{توافق} \\
-    \midrule
+    \hline
     روندهای منفی \lr{TWSA} در همه حوضه‌ها     & \lr{Forootan (2014); Moiwo (2015)}         & قوی \\
     ارومیه در میان بالاترین نرخ‌های تخلیه      & \lr{Joodaki (2014)}                        & سازگار \\
     دریای خزر بالاترین همبستگی \lr{GRACE-SPI}      & \lr{Khaki (2018)}                          & قوی \\
     \lr{GRACE-SPI} $r = 0.19$–$0.49$           & \lr{Tourian (2015); Khaki (2018): 0.4–0.7} & در محدوده \\
     خشکسالی ۲۰۰۷–۲۰۰۹ شناسایی شد             & \lr{AghaKouchak (2015)}                    & قوی \\
     دوره ۲۰۱۷–۲۰۱۹ شدیدترین بوده             & \lr{AghaKouchak (2015)}                    & قوی \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table}
 
