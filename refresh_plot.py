@@ -15,6 +15,7 @@ MARKOV_PLOT = os.path.join(OUTPUT_DIR, 'markov_transition_matrices.png')
 SCATTER_PLOT = os.path.join(OUTPUT_DIR, 'dsi_spi_scatter.png')
 CORR_HEATMAP = os.path.join(OUTPUT_DIR, 'correlation_heatmap.png')
 URMIA_COMP = os.path.join(OUTPUT_DIR, 'spi12_vs_grace_dsi.png')
+STATION_MAP = os.path.join(OUTPUT_DIR, 'station_coverage_map.png')
 
 def fix_text(text):
     if not text: return text
@@ -140,6 +141,37 @@ def refresh_plots():
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm); sm.set_array([]); cbar = plt.colorbar(sm, ax=ax, fraction=0.03, pad=0.04)
     cbar.set_label(fix_text('شدت شاخص GRACE-DSI (قرمز=خشکسالی، آبی=ترسالی)'), size=12)
     plt.savefig(DSI_MAP, dpi=300); plt.close()
+
+    # --- 7. STATION COVERAGE MAP ---
+    print("  -> Station Coverage Map")
+    try:
+        BASIN_MAP_STATIONS = {
+            'Caspian Sea': 'caspiansea', 'eastern': 'eastern', 'markazi': 'markazi',
+            'persiangolf': 'persiangolf', 'qaraqom': 'qaraqom', 'urmia': 'urmia'
+        }
+        # stations was already loaded on line 53
+        stations['basin'] = stations['watershed_name'].map(BASIN_MAP_STATIONS)
+        valid_stations = stations.dropna(subset=['basin'])
+        
+        fig, ax = plt.subplots(figsize=(12, 7))
+        for b in BASINS:
+            sub = valid_stations[valid_stations['basin'] == b]
+            # Create a label with English and Persian, both passed through fix_text
+            label_text = fix_text(f"{b.capitalize().replace('Caspiansea', 'Caspian Sea').replace('Persiangolf', 'Persian Gulf')} ({BASIN_NAMES_RAW[b]})")
+            ax.scatter(sub['lon_decima'], sub['lat_decima'],
+                       c=BASIN_COLORS[b], s=40, alpha=0.8, label=label_text, zorder=3)
+        
+        ax.set_xlabel('Longitude (°E)')
+        ax.set_ylabel('Latitude (°N)')
+        ax.set_title(fix_text('Distribution of 178 Synoptic Stations across Iranian Hydrological Basins'))
+        ax.legend(loc='lower right', fontsize=10)
+        ax.set_xlim(43, 65); ax.set_ylim(24, 40)
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(STATION_MAP, dpi=150, bbox_inches='tight')
+        plt.close()
+    except Exception as e:
+        print(f"    [error] Station map failed: {e}")
 
     print("DONE: All thesis figures refreshed and RTL-corrected.")
 
