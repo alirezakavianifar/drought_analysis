@@ -18,7 +18,13 @@ URMIA_COMP = os.path.join(OUTPUT_DIR, 'spi12_vs_grace_dsi.png')
 
 def fix_text(text):
     if not text: return text
-    return get_display(arabic_reshaper.reshape(text))
+    # Use a configuration specifically for TrueType fonts to ensure better ligatures
+    configuration = arabic_reshaper.config_for_true_type_font(
+        'C:/Windows/Fonts/tahoma.ttf',
+        arabic_reshaper.ENABLE_ALL_LIGATURES
+    )
+    reshaper = arabic_reshaper.ArabicReshaper(configuration=configuration)
+    return get_display(reshaper.reshape(text))
 
 def classify_dsi(val):
     if val >= -0.5: return 'Wet'

@@ -54,6 +54,7 @@
 \usepackage{setspace}
 \usepackage{xcolor}
 \usepackage{multirow}
+\usepackage{tabularx}
 \usepackage{caption}
 \usepackage{titlesec}   % custom section formatting
 \usepackage[colorlinks=true,
@@ -163,7 +164,7 @@
   \caption{اهمیت هیدرولوژیکی و تنش‌های اصلی خشکسالی در هر حوضه}
   \label{tab:hydro-importance}
   \small
-  \begin{tabular}{lll}\toprule
+  \begin{tabularx}{\textwidth}{lXX}\toprule
     \textbf{حوضه} & \textbf{اهمیت هیدرولوژیکی} & \textbf{تنش اصلی خشکسالی} \\
     \midrule
     خزر        & تنها حوضه مرطوب؛ تغذیه مخازن عمده (سد سفیدرود) &
@@ -179,7 +180,7 @@
     قراقوم    & تغذیه رود اترک (مشترک با ترکمنستان)؛ مراتع نیمه‌خشک &
                  خشکسالی مراتع؛ تنش آب فرامرزی \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
 \end{table}
 
 \begin{figure}[htbp]
@@ -219,7 +220,7 @@
   \caption{منابع خطای \lr{GRACE} و پردازش‌های اعمال‌شده در این مطالعه}
   \label{tab:grace-errors}
   \small
-  \begin{tabular}{llll}\hline
+  \begin{tabularx}{\textwidth}{lXcX}\hline
     \textbf{منبع خطا} & \textbf{توضیح} & \textbf{مقدار معمول} & \textbf{راهکار کاهش} \\
     \hline
     نویز اندازه‌گیری     & نویز سنجش فاصله \lr{Ka-band} و شتاب‌سنج &
@@ -235,7 +236,7 @@
     شکاف مأموریت (۲۰۱۷–۲۰۱۸) & شکاف $\sim$۱۱ ماهه بین \lr{GRACE} و \lr{GRACE-FO} &
                            \lr{N/A} & درون‌یابی خطی؛ ماه‌های شکاف علامت‌گذاری شده \\
     \hline
-  \end{tabular}
+  \end{tabularx}
 \end{table}
 
 داده‌های مورد استفاده در این مطالعه \textbf{حل‌های ماسکون \lr{CSR RL06}} هستند که فیلتر
@@ -446,15 +447,13 @@
   \end{tabular}
 \end{table}
 
-پنج حوضه از شش حوضه در \textbf{سال ۲۰۲۲} — آخرین سال دوره مطالعه — به بدترین شرایط
-خشکسالی هیدرولوژیکی رسیدند. فروپاشی همزمان در تمامی حوضه‌ها در ۲۰۲۱–۲۰۲۲ یک
-\textbf{رویداد خشکسالی هیدرولوژیکی در مقیاس ملی} را تشکیل می‌دهد.
+با توجه به اینکه پهنه سرزمینی ایران بر اساس استانداردهای مدیریت منابع آب به ۶ حوضه آبریز اصلی (درجه ۱) تقسیم شده است، قرارگیری همزمان تمامی این حوضه‌ها در شرایط خشکسالی هیدرولوژیکی، نشان‌دهنده یک بحران سراسری در سطح ملی است. فروپاشی همزمان شاخص در تمامی حوضه‌ها طی دوره ۲۰۲۱–۲۰۲۲ یک \textbf{رویداد خشکسالی هیدرولوژیکی در مقیاس ملی} را تشکیل می‌دهد (شکل~\ref{fig:4-7}).
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{./outputs/drought_coverage_by_year.png}
   \caption{تعداد حوضه‌های ایرانی که به‌طور همزمان در خشکسالی هیدرولوژیکی قرار دارند
-           (\lr{DSI} $< -1.0$) به ازای هر سال.}
+           (\lr{DSI} $< -1.0$) به ازای هر سال. از آنجا که ایران دارای ۶ حوضه آبریز اصلی است، مقدار ۶ در محور عمودی نشان‌دهنده پوشش کامل جغرافیایی کشور توسط پدیده خشکسالی و وقوع بحران در مقیاس ملی است.}
   \label{fig:4-7}
 \end{figure}
 
@@ -585,11 +584,12 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \caption{نتایج اعتبارسنجی پیش‌بینی \lr{ARIMA(1,1,1)} (۲۰\% نگه‌داشته‌شده $\approx$ ۴۹ ماه)}
   \label{tab:arima}
   \small
-  \begin{tabular}{lcccccc}\hline
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabularx}{\textwidth}{lXXXXXX}\hline
     \textbf{حوضه} &
-    \textbf{دقت حالت خشکسالی (\%)} &
-    \textbf{MAE (سانتی‌متر)} &
-    \textbf{RMSE (سانتی‌متر)} &
+    \textbf{دقت خشکسالی (\%)} &
+    \textbf{MAE (cm)} &
+    \textbf{RMSE (cm)} &
     \textbf{MAE (DSI)} &
     \textbf{RMSE (DSI)} &
     \textbf{نتیجه} \\
@@ -601,7 +601,7 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
     خلیج فارس  & ۲۴.۵ & ۷.۱۶ & ۹.۰۵ & ۱.۰۲۶ & ۱.۲۹۹ & تأیید نشد \\
     ارومیه     & ۲۶.۵ & ۱۴.۶۴ & ۱۷.۷۰ & ۱.۳۱۱ & ۱.۵۸۵ & تأیید نشد \\
     \hline
-  \end{tabular}
+  \end{tabularx}
   \par\smallskip
   \raggedleft\small
   \textit{معیار نتیجه: دقت حالت خشکسالی $\geq$ ۶۰\% و \lr{RMSE (DSI)} $\leq$ ۱.۰.}
@@ -857,21 +857,21 @@ $0.493$ (مرکزی) متغیر است. این مقادیر از نظر آمار
   \caption{خلاصه محدودیت‌های پژوهش}
   \label{tab:limitations}
   \small
-  \begin{tabular}{llll}\hline
-    \textbf{محدودیت} & \textbf{شدت} & \textbf{اقدام کاهشی اعمال‌شده} & \textbf{اقدام پیشنهادی آینده} \\
+  \begin{tabularx}{\textwidth}{lXcX}\hline
+    \textbf{محدودیت} & \textbf{شدت} & \textbf{اقدام کاهشی} & \textbf{اقدام پیشنهادی آینده} \\
     \hline
-    فقدان آب زیرزمینی درجا  & بالا     & معیارسنجی با مقالات، پروکسی \lr{GWS} &
-                                یکپارچه‌سازی \lr{GLDAS}؛ توافق داده چاه \\
-    فقدان داده رواناب/جریان & متوسط    & مانده بیلان آبی &
-                                سوابق ایستگاه هیدرومتری \\
-    تفکیک خشن \lr{GRACE}    & متوسط    & فیلتر \lr{DDK}، مستندسازی نشت &
-                                مقیاس‌سازی پایین \lr{GRACE} \\
-    شکاف مأموریت ۲۰۱۷–۲۰۱۸ & کم تا متوسط & درون‌یابی خطی + علامت‌گذاری &
-                                روش‌های پرکردن شکاف با آنسامبل \\
-    فقدان مشاهدات مستقیم $ET$ & متوسط  & پروکسی مانده \lr{WB} (سهم ۸۰\%) &
-                                \lr{MODIS ET} / بازتحلیل \lr{ERA5} \\
+    فقدان آب درجا  & بالا     & معیارسنجی، پروکسی \lr{GWS} &
+                                 یکپارچه‌سازی \lr{GLDAS}؛ توافق داده چاه \\
+    فقدان داده رواناب & متوسط    & مانده بیلان آبی &
+                                 سوابق ایستگاه هیدرومتری \\
+    تفکیک خشن \lr{GRACE}    & متوسط    & فیلتر \lr{DDK} &
+                                 مقیاس‌سازی پایین \lr{GRACE} \\
+    شکاف مأموریت ۲۰۱۷–۲۰۱۸ & کم تا متوسط & درون‌یابی خطی + مارک‌گذاری &
+                                 روش‌های پرکردن شکاف با آنسامبل \\
+    فقدان مشاهدات $ET$ & متوسط  & پروکسی مانده \lr{WB} &
+                                 \lr{MODIS ET} / بازتحلیل \lr{ERA5} \\
     \hline
-  \end{tabular}
+  \end{tabularx}
 \end{table}
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -940,7 +940,7 @@ $r = 0.4$–$0.7$ یافتند. نتایج ما ($r = 0.19$–$0.49$) در مح�
   \centering
   \caption{خلاصه همسویی با مقالات}
   \label{tab:lit-comparison}
-  \begin{tabular}{lll}\hline
+  \begin{tabularx}{\textwidth}{XXX}\hline
     \textbf{یافته ما} & \textbf{مرجع مقاله} & \textbf{توافق} \\
     \hline
     روندهای منفی \lr{TWSA} در همه حوضه‌ها     & \lr{Forootan (2014); Moiwo (2015)}         & قوی \\
@@ -950,7 +950,7 @@ $r = 0.4$–$0.7$ یافتند. نتایج ما ($r = 0.19$–$0.49$) در مح�
     خشکسالی ۲۰۰۷–۲۰۰۹ شناسایی شد             & \lr{AghaKouchak (2015)}                    & قوی \\
     دوره ۲۰۱۷–۲۰۱۹ شدیدترین بوده             & \lr{AghaKouchak (2015)}                    & قوی \\
     \hline
-  \end{tabular}
+  \end{tabularx}
 \end{table}
 
 \begin{quote}
